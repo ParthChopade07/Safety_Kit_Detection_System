@@ -1,183 +1,140 @@
 """
-All Modules - Central Import File
-==================================
-This file contains all imports used across the Safety Kit Detection System project.
-Import this file to get access to all required modules at once.
+Safety Kit Detection System - Complete Module Manager
+Centralized imports for all modules used across the project
 
 Usage:
-    from all_modules import *
-    # OR
-    import all_modules as modules
-    # Then use: modules.cv2, modules.np, etc.
+    Method 1 - Import specific modules:
+        from all_modules import cv2, np, YOLO, Path
+    
+    Method 2 - Import as module:
+        import all_modules as mod
+        mod.cv2.imread('image.jpg')
+    
+    Method 3 - Import everything:
+        from all_modules import *
 """
 
-# ============================================================================
-# STANDARD LIBRARY IMPORTS
-# ============================================================================
-
-# System and OS
 import os
 import sys
 import subprocess
-import platform
-
-# Determine if running as script or being imported
-_IS_MAIN = __name__ == "__main__"
-_SHOW_WARNINGS = not _IS_MAIN  # Only show warnings when imported, not when run directly
-
-# File and Path Operations
-from pathlib import Path
 import shutil
-
-# Data Types and Collections
-from typing import Dict, List, Tuple, Optional, Union, Any
-from collections import deque, defaultdict, Counter
-
-# Date and Time
-import time
-from datetime import datetime, timedelta
-
-# Random and Math
 import random
-import math
-
-# JSON and Data Serialization
+import time
 import json
-import pickle
+import threading
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Tuple, Optional
+from collections import deque
 
-# YAML (for dataset configuration)
-try:
-    import yaml
-except ImportError:
-    yaml = None
-    if _SHOW_WARNINGS:
-        print("Warning: PyYAML not installed. Install with: pip install PyYAML")
 
-# ============================================================================
-# THIRD-PARTY IMPORTS - Computer Vision and Image Processing
-# ============================================================================
-
-# OpenCV - Computer Vision Library
+# OpenCV - Main library for image/video processing
 try:
     import cv2
+    CV2_AVAILABLE = True
 except ImportError:
     cv2 = None
-    if _SHOW_WARNINGS:
-        print("Warning: OpenCV not installed. Install with: pip install opencv-python")
+    CV2_AVAILABLE = False
+    print("⚠️  OpenCV not installed. Install: pip install opencv-python")
 
-# NumPy - Numerical Computing
+# NumPy - Numerical operations and arrays
 try:
     import numpy as np
+    NUMPY_AVAILABLE = True
 except ImportError:
     np = None
-    if _SHOW_WARNINGS:
-        print("Warning: NumPy not installed. Install with: pip install numpy")
+    NUMPY_AVAILABLE = False
+    print("⚠️  NumPy not installed. Install: pip install numpy")
 
-# Pillow - Image Processing
+# Pillow - Image operations for GUI
 try:
-    from PIL import Image, ImageEnhance, ImageFilter
-    import PIL
+    from PIL import Image, ImageTk
+    PIL_AVAILABLE = True
 except ImportError:
     Image = None
-    ImageEnhance = None
-    ImageFilter = None
-    PIL = None
-    if _SHOW_WARNINGS:
-        print("Warning: Pillow not installed. Install with: pip install Pillow")
+    ImageTk = None
+    PIL_AVAILABLE = False
+    print("⚠️  Pillow not installed. Install: pip install Pillow")
 
-# Scikit-Image - Image Processing
+# Scikit-Image - Advanced image processing
 try:
-    from skimage import filters, exposure, morphology, measure
+    from skimage import filters, exposure, morphology
     import skimage
+    SKIMAGE_AVAILABLE = True
 except ImportError:
+    skimage = None
     filters = None
     exposure = None
     morphology = None
-    measure = None
-    skimage = None
-    if _SHOW_WARNINGS:
-        print("Warning: scikit-image not installed. Install with: pip install scikit-image")
+    SKIMAGE_AVAILABLE = False
+    print("⚠️  scikit-image not installed. Install: pip install scikit-image")
 
-# Imutils - Image Utilities
+# IMUtils - Convenience functions for OpenCV
 try:
     import imutils
+    IMUTILS_AVAILABLE = True
 except ImportError:
     imutils = None
-    if _SHOW_WARNINGS:
-        print("Warning: imutils not installed. Install with: pip install imutils")
+    IMUTILS_AVAILABLE = False
+    print("⚠️  imutils not installed. Install: pip install imutils")
 
-# ============================================================================
-# THIRD-PARTY IMPORTS - Machine Learning and Deep Learning
-# ============================================================================
 
-# PyTorch - Deep Learning Framework
+
+# PyTorch - Deep learning framework
 try:
     import torch
     import torchvision
-    from torch import nn, optim
-    from torchvision import transforms, models, datasets
+    TORCH_AVAILABLE = True
 except ImportError:
     torch = None
     torchvision = None
-    nn = None
-    optim = None
-    transforms = None
-    models = None
-    datasets = None
-    if _SHOW_WARNINGS:
-        print("Warning: PyTorch not installed. Install with: pip install torch torchvision")
+    TORCH_AVAILABLE = False
+    print("⚠️  PyTorch not installed. Install: pip install torch torchvision")
 
-# Ultralytics YOLO - Object Detection
+# Ultralytics YOLO - Object detection
 try:
     from ultralytics import YOLO
-    from ultralytics.utils import LOGGER, colorstr
-    from ultralytics.models import YOLO as YOLOModel
+    YOLO_AVAILABLE = True
 except ImportError:
     YOLO = None
-    LOGGER = None
-    colorstr = None
-    YOLOModel = None
-    if _SHOW_WARNINGS:
-        print("Warning: Ultralytics not installed. Install with: pip install ultralytics")
+    YOLO_AVAILABLE = False
+    print("⚠️  Ultralytics not installed. Install: pip install ultralytics")
 
-# ============================================================================
-# THIRD-PARTY IMPORTS - Utilities
-# ============================================================================
 
-# Requests - HTTP Library (for dataset downloading)
+# Tkinter - GUI toolkit
+try:
+    import tkinter as tk
+    from tkinter import ttk, messagebox
+    TKINTER_AVAILABLE = True
+except ImportError:
+    tk = None
+    ttk = None
+    messagebox = None
+    TKINTER_AVAILABLE = False
+    print("⚠️  Tkinter not available (usually comes with Python)")
+
+
+
+# YAML - Configuration files
+try:
+    import yaml
+    YAML_AVAILABLE = True
+except ImportError:
+    yaml = None
+    YAML_AVAILABLE = False
+    print("⚠️  PyYAML not installed. Install: pip install PyYAML")
+
+# Requests - HTTP library
 try:
     import requests
-    from requests.exceptions import RequestException, Timeout
+    REQUESTS_AVAILABLE = True
 except ImportError:
     requests = None
-    RequestException = None
-    Timeout = None
-    if _SHOW_WARNINGS:
-        print("Warning: requests not installed. Install with: pip install requests")
+    REQUESTS_AVAILABLE = False
+    print("⚠️  Requests not installed. Install: pip install requests")
 
-# Progress Bars
-try:
-    from tqdm import tqdm
-except ImportError:
-    tqdm = None
-    if _SHOW_WARNINGS:
-        print("Warning: tqdm not installed. Install with: pip install tqdm")
 
-# ============================================================================
-# PROJECT-SPECIFIC IMPORTS
-# ============================================================================
-
-# Note: These would be imports from your own modules if you create them
-# Example:
-# from .image_enhancer import ImageEnhancer
-# from .ppe_detector import PPEDetector
-# from .false_positive_filter import FalsePositiveFilter
-
-# ============================================================================
-# CONSTANTS AND CONFIGURATION
-# ============================================================================
-
-# Safety Equipment Classes
+# Safety equipment classes
 SAFETY_CLASSES = {
     'helmet': 0,
     'vest': 1,
@@ -186,10 +143,10 @@ SAFETY_CLASSES = {
     'person': 4
 }
 
-# Class Names List
+# Class names list
 CLASS_NAMES = ['helmet', 'vest', 'gloves', 'safety_glasses', 'person']
 
-# Default Model Paths
+# Default model paths
 DEFAULT_MODEL_PATHS = {
     'yolov8n': 'yolov8n.pt',
     'yolov8s': 'yolov8s.pt',
@@ -198,123 +155,143 @@ DEFAULT_MODEL_PATHS = {
     'yolov8x': 'yolov8x.pt'
 }
 
-# Default Detection Parameters
-DEFAULT_CONFIDENCE_THRESHOLD = 0.65
+# Detection thresholds
+DEFAULT_CONFIDENCE_THRESHOLD = 0.5
 DEFAULT_IOU_THRESHOLD = 0.5
 DEFAULT_IMAGE_SIZE = 640
 
-# ============================================================================
-# UTILITY FUNCTIONS
-# ============================================================================
+
 
 def check_imports():
     """
-    Check if all critical imports are available.
-    Returns dictionary with import status.
+    Check which modules are available
+    
+    Returns:
+        dict: Status of each module
     """
     status = {
-        'opencv': cv2 is not None,
-        'numpy': np is not None,
-        'yolo': YOLO is not None,
-        'torch': torch is not None,
-        'yaml': yaml is not None,
-        'pillow': Image is not None,
+        'opencv': CV2_AVAILABLE,
+        'numpy': NUMPY_AVAILABLE,
+        'pillow': PIL_AVAILABLE,
+        'skimage': SKIMAGE_AVAILABLE,
+        'imutils': IMUTILS_AVAILABLE,
+        'torch': TORCH_AVAILABLE,
+        'yolo': YOLO_AVAILABLE,
+        'tkinter': TKINTER_AVAILABLE,
+        'yaml': YAML_AVAILABLE,
+        'requests': REQUESTS_AVAILABLE
     }
     return status
 
 def print_import_status():
-    """Print status of all imports"""
+    """Print the status of all imports"""
     print("=" * 70)
-    print("IMPORT STATUS")
+    print("MODULE IMPORT STATUS")
     print("=" * 70)
+    
     status = check_imports()
-    for module, available in status.items():
-        symbol = "✓" if available else "✗"
-        print(f"  {symbol} {module}")
+    
+    critical = ['opencv', 'numpy', 'yolo']
+    optional = ['pillow', 'skimage', 'imutils', 'torch', 'tkinter', 'yaml', 'requests']
+    
+    print("\nCritical Modules (Required):")
+    for module in critical:
+        status_str = "✓" if status[module] else "✗"
+        print(f"  {status_str} {module}")
+    
+    print("\nOptional Modules:")
+    for module in optional:
+        status_str = "✓" if status[module] else "✗"
+        print(f"  {status_str} {module}")
+    
     print("=" * 70)
+    
+    if all(status[m] for m in critical):
+        print("✅ All critical modules available - System ready!")
+    else:
+        print("⚠️  Some critical modules missing - Install with: pip install -r requirements.txt")
 
 def get_missing_imports():
-    """Get list of missing critical imports"""
+    """
+    Get list of missing imports
+    
+    Returns:
+        list: Names of missing modules
+    """
     status = check_imports()
     missing = [module for module, available in status.items() if not available]
     return missing
 
-# ============================================================================
-# CONVENIENCE ALIASES
-# ============================================================================
+def install_missing():
+    """Install missing modules"""
+    missing = get_missing_imports()
+    
+    if not missing:
+        print("✅ All modules already installed!")
+        return True
+    
+    print(f"Installing missing modules: {', '.join(missing)}")
+    print("\nRunning: pip install -r requirements.txt")
+    
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+        print("✅ Installation complete!")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"✗ Installation failed: {e}")
+        return False
 
-# Common aliases for easier access
-OpenCV = cv2
-NumPy = np
-PyTorch = torch
-YOLOModel = YOLO
 
-# ============================================================================
-# VERSION INFORMATION
-# ============================================================================
-
-__version__ = "1.0.0"
-__author__ = "Safety Kit Detection System"
-__description__ = "Central import file for all project modules"
-
-# ============================================================================
-# AUTO-CHECK ON IMPORT (Optional)
-# ============================================================================
-
-# Uncomment the line below to automatically check imports when this file is imported
-# print_import_status()
-
-# ============================================================================
-# MAIN BLOCK - Run when executed directly
-# ============================================================================
-
-if __name__ == "__main__":
-    print("=" * 70)
-    print("All Modules - Import Status")
-    print("=" * 70)
-    print("\nThis file contains all imports for the Safety Kit Detection System.")
-    print("Import it in your code, don't run it directly.")
-    print("\nUsage:")
-    print("  from all_modules import cv2, np, YOLO")
-    print("  # or")
-    print("  import all_modules as mod")
-    print("\n" + "=" * 70)
-    print_import_status()
-    print("=" * 70)
-
-# ============================================================================
-# EXPORT LIST (for explicit imports)
-# ============================================================================
 
 __all__ = [
-    # Standard Library
-    'os', 'sys', 'subprocess', 'platform',
-    'Path', 'shutil',
-    'Dict', 'List', 'Tuple', 'Optional', 'Union', 'Any',
-    'deque', 'defaultdict', 'Counter',
-    'time', 'datetime', 'timedelta',
-    'random', 'math',
-    'json', 'pickle', 'yaml',
+    # Standard library
+    'os', 'sys', 'subprocess', 'shutil', 'random', 'time', 'json', 'threading',
+    'Path', 'datetime', 'Dict', 'List', 'Tuple', 'Optional', 'deque',
     
     # Computer Vision
-    'cv2', 'np', 'Image', 'ImageEnhance', 'ImageFilter', 'PIL',
-    'filters', 'exposure', 'morphology', 'measure', 'skimage',
-    'imutils',
+    'cv2', 'np', 'Image', 'ImageTk', 'skimage', 'filters', 'exposure', 
+    'morphology', 'imutils',
     
     # Machine Learning
-    'torch', 'torchvision', 'nn', 'optim',
-    'transforms', 'models', 'datasets',
-    'YOLO', 'LOGGER', 'colorstr', 'YOLOModel',
+    'torch', 'torchvision', 'YOLO',
     
-    # Utilities
-    'requests', 'RequestException', 'Timeout',
-    'tqdm',
+    # GUI
+    'tk', 'ttk', 'messagebox',
+    
+    # Data Processing
+    'yaml', 'requests',
     
     # Constants
     'SAFETY_CLASSES', 'CLASS_NAMES', 'DEFAULT_MODEL_PATHS',
     'DEFAULT_CONFIDENCE_THRESHOLD', 'DEFAULT_IOU_THRESHOLD', 'DEFAULT_IMAGE_SIZE',
     
-    # Functions
-    'check_imports', 'print_import_status', 'get_missing_imports',
+    # Availability flags
+    'CV2_AVAILABLE', 'NUMPY_AVAILABLE', 'PIL_AVAILABLE', 'SKIMAGE_AVAILABLE',
+    'IMUTILS_AVAILABLE', 'TORCH_AVAILABLE', 'YOLO_AVAILABLE', 'TKINTER_AVAILABLE',
+    'YAML_AVAILABLE', 'REQUESTS_AVAILABLE',
+    
+    # Utility functions
+    'check_imports', 'print_import_status', 'get_missing_imports', 'install_missing'
 ]
 
+
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("ALL MODULES - Safety Kit Detection System")
+    print("=" * 70)
+    print("\nThis file provides centralized imports for the entire project.")
+    print("\nUsage in your code:")
+    print("  from all_modules import cv2, np, YOLO, Path")
+    print("\nChecking module availability...")
+    print()
+    print_import_status()
+    
+    missing = get_missing_imports()
+    if missing:
+        print(f"\n⚠️  Missing modules: {', '.join(missing)}")
+        response = input("\nInstall missing modules now? (y/n): ")
+        if response.lower() == 'y':
+            install_missing()
+    else:
+        print("\n✅ All modules are installed and ready to use!")

@@ -9,10 +9,6 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import threading
 
-# ----------------------------------------------------------------------------
-# HybridPPEDetector
-# ----------------------------------------------------------------------------
-
 class HybridPPEDetector:
     """Hybrid detector using CV techniques + YOLO person detection"""
     def __init__(self):
@@ -171,10 +167,6 @@ class HybridPPEDetector:
             'person_bboxes': [bbox for bbox, _ in persons]
         }
 
-# ----------------------------------------------------------------------------
-# PersonTracker
-# ----------------------------------------------------------------------------
-
 class PersonTracker:
     """Track equipment status per person"""
     def __init__(self):
@@ -218,9 +210,6 @@ class PersonTracker:
     def get_all_persons(self):
         return self.persons.copy()
 
-# ----------------------------------------------------------------------------
-# HybridDetectionApp
-# ----------------------------------------------------------------------------
 
 class HybridDetectionApp:
     """Professional UI Application using hybrid detection with per-person tracking."""
